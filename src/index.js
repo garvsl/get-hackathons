@@ -20,34 +20,58 @@ async function main(user) {
     const result = await response.text();
     const split = result.split(`data-software-id`);
     split.shift();
-    const hackathons = split.map((e) => {
+    const hackathons = split.map(async (e) => {
       const hack = e.slice(0, e.indexOf("<!-- cache end -->"));
 
-      const title = hack
-        .slice(hack.indexOf("<h5>") + 4, hack.indexOf("</h5>"))
+      let title = hack.indexOf("<h5");
+      title = hack
+        .slice(hack.indexOf(">", title) + 1, hack.indexOf("</h5>", title))
         .trim();
+
+      let tag = hack.indexOf("<p");
+      tag = hack
+        .slice(hack.indexOf(">", tag) + 1, hack.indexOf("</p>", tag))
+        .trim();
+
+      let link = e.indexOf("href");
+      link = e.slice(link + 6, e.indexOf(`">`, link + 5));
 
       let image = hack.indexOf(`src="`);
       image = hack.slice(image + 5, hack.indexOf("/>", image) - 2);
 
       const winner = hack.includes("Winner");
+      let wins = new Promise(async (resolve, reject) => {
+        if (winner) {
+          const software = await fetch(link, headers);
+          const software_result = await software.text();
+          let awards = software_result.split("Winner");
+          awards.shift();
+          awards = awards.map((win) => {
+            const award_name = win.slice(8, win.indexOf("</li>")).trim();
+            return award_name.replace(/&quot;/g, '"');
+          });
+          resolve(awards);
+        } else {
+          resolve([]);
+        }
+      });
 
       return {
         id: e.slice(2, e.indexOf(`">`)),
-        link: e.slice(
-          e.indexOf("href") + 6,
-          e.indexOf(`">`, e.indexOf("href") + 5)
-        ),
+        link,
         title,
+        tag,
         image,
+        // TODO tech stack
         winner,
+        awards: await wins,
       };
     });
 
-    console.log(hackathons);
+    return Promise.all(hackathons);
   } catch (e) {
     console.error(e);
   }
 }
 
-main("garvsl");
+console.log(await main("garvsl"));
