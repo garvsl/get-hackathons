@@ -34,14 +34,14 @@ async function main(user) {
 
     res["username"] = user;
 
-    hackathons_split.forEach((hackathon, i, theArray) => {
+    hackathons_split.forEach((hackathon) => {
       const id =
         hackathon.attributes.getNamedItem("data-software-id").textContent;
       const title = hackathon.querySelector("h5").textContent.trim();
       const link = hackathon.querySelector("a").href;
       const tag = hackathon.querySelector("p").textContent.trim();
       const img = hackathon.querySelector("img").src;
-      const winner = hackathon.contains(
+      let winner = hackathon.contains(
         hackathon.querySelector('img[alt="Winner"]')
       );
       res["wins"] += winner ? 1 : 0;
@@ -49,61 +49,31 @@ async function main(user) {
       res["hackathons"].push({ id, link, title, tag, img, winner });
     });
 
+    const modified_hackathons = Promise.all(
+      res["hackathons"].map(async (hackathon) => {
+        if (hackathon.winner) {
+          const software = await fetch(hackathon.link, headers);
+          const software_result = await software.text();
+          const software_dom = new JSDOM(software_result);
+          const wins_split = software_dom.window.document.querySelectorAll(
+            "div.software-list-content > ul > li"
+          );
+          let wins = [];
+          wins_split.forEach((e) => {
+            wins.push(e.textContent.split("Winner")[1].trim());
+          });
+          hackathon.winner = wins;
+        }
+        return hackathon;
+      })
+    );
+
+    res["hackathons"] = await modified_hackathons;
+
     return res;
-
-    // split.shift();
-    // const hackathons = split.map(async (e) => {
-    //   const hack = e.slice(0, e.indexOf("<!-- cache end -->"));
-
-    //   let title = hack.indexOf("<h5");
-    //   title = hack
-    //     .slice(hack.indexOf(">", title) + 1, hack.indexOf("</h5>", title))
-    //     .trim();
-
-    //   let tag = hack.indexOf("<p");
-    //   tag = hack
-    //     .slice(hack.indexOf(">", tag) + 1, hack.indexOf("</p>", tag))
-    //     .trim();
-
-    //   let link = e.indexOf("href");
-    //   link = e.slice(link + 6, e.indexOf(`">`, link + 5));
-
-    //   let image = hack.indexOf(`src="`);
-    //   image = hack.slice(image + 5, hack.indexOf("/>", image) - 2);
-
-    //   const winner = hack.includes("Winner");
-    //   let wins = new Promise(async (resolve, reject) => {
-    //     if (winner) {
-    //       const software = await fetch(link, headers);
-    //       const software_result = await software.text();
-    //       let awards = software_result.split("Winner");
-    //       awards.shift();
-    //       awards = awards.map((win) => {
-    //         const award_name = win.slice(8, win.indexOf("</li>")).trim();
-    //         return award_name.replace(/&quot;/g, '"');
-    //       });
-    //       resolve(awards);
-    //     } else {
-    //       resolve([]);
-    //     }
-    //   });
-
-    //   return {
-    //     id: e.slice(2, e.indexOf(`">`)),
-    //     link,
-    //     title,
-    //     tag,
-    //     image,
-    //     // TODO tech stack
-    //     winner,
-    //     awards: await wins,
-    //   };
-    // });
-
-    // return Promise.all(hackathons);
   } catch (e) {
     console.error(e);
   }
 }
 
-console.log(await main("garvsl"));
+console.log((await main("garvsl")).hackathons);
