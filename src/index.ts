@@ -31,21 +31,24 @@ async function main(user: string): Promise<Res> {
     referrerPolicy: "no-referrer-when-downgrade" as ReferrerPolicy,
   };
 
+  let res: Res = {
+    username: "",
+    total: 0,
+    wins: 0,
+    hackathons: [],
+  };
+
   try {
     const response = await fetch(`https://devpost.com/${user}`, headers);
+    if (response.status != 200) {
+      throw new Error(`Hackathon Retrieval Error! ${response.status}`);
+    }
     const result = await response.text();
 
     const dom = new JSDOM(result);
 
     let hackathons_split =
       dom.window.document.querySelectorAll("[data-software-id]");
-
-    let res: Res = {
-      username: "",
-      total: 0,
-      wins: 0,
-      hackathons: [],
-    };
 
     res["username"] = user;
 
@@ -68,6 +71,9 @@ async function main(user: string): Promise<Res> {
       res["hackathons"].map(async (hackathon) => {
         if (hackathon.winner) {
           const software = await fetch(hackathon.link!, headers);
+          if (software.status != 200) {
+            throw new Error(`Software Retrieval Error! ${response.status}`);
+          }
           const software_result = await software.text();
           const software_dom = new JSDOM(software_result);
           const wins_split = software_dom.window.document.querySelectorAll(
@@ -89,14 +95,10 @@ async function main(user: string): Promise<Res> {
     return res;
   } catch (e) {
     console.error(e);
-    return {
-      username: "",
-      total: 0,
-      wins: 0,
-      hackathons: [],
-    };
+    return res;
   }
 }
+
 (async () => {
-  console.log((await main("grabba")).hackathons);
+  console.log(await main("garvsl"));
 })();
