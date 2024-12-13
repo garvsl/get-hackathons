@@ -1,7 +1,9 @@
-import { getHackathons, getWins } from "./utils";
+import { fetchHackathons, getWins } from "./utils";
 import type { UserHackathons } from "./types";
 
-export default async function main(username: string): Promise<UserHackathons> {
+export default async function getHackathons(
+  username: string
+): Promise<UserHackathons> {
   let res: UserHackathons = {
     username,
     total: 0,
@@ -10,7 +12,7 @@ export default async function main(username: string): Promise<UserHackathons> {
   };
 
   try {
-    res = await getHackathons(res);
+    res = await fetchHackathons(res);
     res["hackathons"] = await getWins(res);
 
     return res;
@@ -19,7 +21,3 @@ export default async function main(username: string): Promise<UserHackathons> {
     return res;
   }
 }
-
-(async () => {
-  console.log(await main("garvsl"));
-})();

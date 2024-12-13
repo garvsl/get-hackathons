@@ -2,7 +2,7 @@ import { JSDOM } from "jsdom";
 import { UserHackathons } from "./types";
 import { CONFIG } from "./config";
 
-export async function getHackathons(
+export async function fetchHackathons(
   res: UserHackathons
 ): Promise<UserHackathons> {
   const response = await fetch(
