@@ -14,7 +14,7 @@ interface Res {
   }[];
 }
 
-async function main(user: string): Promise<Res> {
+export default async function main(user: string): Promise<Res> {
   const headers = {
     cache: "default" as RequestCache,
     credentials: "omit" as RequestCredentials,
@@ -83,7 +83,7 @@ async function main(user: string): Promise<Res> {
           wins_split.forEach((e) => {
             wins.push(e.textContent!.split("Winner")[1].trim());
           });
-          // techstack
+          // TODO techstack
           hackathon.winner = wins;
         }
         return hackathon;
