@@ -1,26 +1,14 @@
 import { JSDOM } from "jsdom";
 import { UserHackathons } from "./types";
-
-const headers = {
-  cache: "default" as RequestCache,
-  credentials: "omit" as RequestCredentials,
-  headers: {
-    Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-    "Accept-Language": "en-US,en;q=0.9",
-    "User-Agent":
-      "Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Mobile/15E148 Safari/604.1",
-    "Cache-Control": "public, max-age=300",
-  },
-  method: "GET",
-  mode: "cors" as RequestMode,
-  redirect: "follow" as RequestRedirect,
-  referrerPolicy: "no-referrer-when-downgrade" as ReferrerPolicy,
-};
+import { CONFIG } from "./config";
 
 export async function getHackathons(
   res: UserHackathons
 ): Promise<UserHackathons> {
-  const response = await fetch(`https://devpost.com/${res.username}`, headers);
+  const response = await fetch(
+    `${CONFIG.BASE_URL}/${res.username}`,
+    CONFIG.HEADERS
+  );
   if (response.status != 200) {
     throw new Error(`Hackathon Retrieval Error! ${response.status}`);
   }
@@ -33,11 +21,11 @@ export async function getHackathons(
 
   hackathons_split.forEach((hackathon) => {
     const id =
-      hackathon.attributes.getNamedItem("data-software-id")?.textContent;
-    const title = hackathon.querySelector("h5")?.textContent?.trim();
-    const link = hackathon.querySelector("a")?.href;
-    const tag = hackathon.querySelector("p")?.textContent?.trim();
-    const img = hackathon.querySelector("img")?.src;
+      hackathon.attributes.getNamedItem("data-software-id")?.textContent || "";
+    const title = hackathon.querySelector("h5")?.textContent?.trim() || "";
+    const link = hackathon.querySelector("a")?.href || "";
+    const tag = hackathon.querySelector("p")?.textContent?.trim() || "";
+    const img = hackathon.querySelector("img")?.src || "";
     let winner = hackathon.contains(
       hackathon.querySelector('img[alt="Winner"]')
     );
@@ -54,7 +42,7 @@ export async function getWins(
   return Promise.all(
     res["hackathons"].map(async (hackathon) => {
       if (hackathon.winner) {
-        const software = await fetch(hackathon.link!, headers);
+        const software = await fetch(hackathon.link!, CONFIG.HEADERS);
         if (software.status != 200) {
           throw new Error(`Software Retrieval Error! ${software.status}`);
         }

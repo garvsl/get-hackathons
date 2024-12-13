@@ -1,9 +1,9 @@
 import { getHackathons, getWins } from "./utils";
 import type { UserHackathons } from "./types";
 
-export default async function main(user: string): Promise<UserHackathons> {
+export default async function main(username: string): Promise<UserHackathons> {
   let res: UserHackathons = {
-    username: user,
+    username,
     total: 0,
     wins: 0,
     hackathons: [],
