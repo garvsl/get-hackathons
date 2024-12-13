@@ -1,9 +1,23 @@
 import { JSDOM } from "jsdom";
 
-async function main(user) {
+interface Res {
+  username: string;
+  total: number;
+  wins: number;
+  hackathons: {
+    id: string | null | undefined;
+    link: string | undefined;
+    title: string | undefined;
+    tag: string | undefined;
+    img: string | undefined;
+    winner: boolean | string[];
+  }[];
+}
+
+async function main(user: string): Promise<Res> {
   const headers = {
-    cache: "default",
-    credentials: "omit",
+    cache: "default" as RequestCache,
+    credentials: "omit" as RequestCredentials,
     headers: {
       Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
       "Accept-Language": "en-US,en;q=0.9",
@@ -12,9 +26,9 @@ async function main(user) {
       "Cache-Control": "public, max-age=300",
     },
     method: "GET",
-    mode: "cors",
-    redirect: "follow",
-    referrerPolicy: "no-referrer-when-downgrade",
+    mode: "cors" as RequestMode,
+    redirect: "follow" as RequestRedirect,
+    referrerPolicy: "no-referrer-when-downgrade" as ReferrerPolicy,
   };
 
   try {
@@ -25,7 +39,8 @@ async function main(user) {
 
     let hackathons_split =
       dom.window.document.querySelectorAll("[data-software-id]");
-    let res = {
+
+    let res: Res = {
       username: "",
       total: 0,
       wins: 0,
@@ -36,11 +51,11 @@ async function main(user) {
 
     hackathons_split.forEach((hackathon) => {
       const id =
-        hackathon.attributes.getNamedItem("data-software-id").textContent;
-      const title = hackathon.querySelector("h5").textContent.trim();
-      const link = hackathon.querySelector("a").href;
-      const tag = hackathon.querySelector("p").textContent.trim();
-      const img = hackathon.querySelector("img").src;
+        hackathon.attributes.getNamedItem("data-software-id")?.textContent;
+      const title = hackathon.querySelector("h5")?.textContent?.trim();
+      const link = hackathon.querySelector("a")?.href;
+      const tag = hackathon.querySelector("p")?.textContent?.trim();
+      const img = hackathon.querySelector("img")?.src;
       let winner = hackathon.contains(
         hackathon.querySelector('img[alt="Winner"]')
       );
@@ -52,16 +67,17 @@ async function main(user) {
     const modified_hackathons = Promise.all(
       res["hackathons"].map(async (hackathon) => {
         if (hackathon.winner) {
-          const software = await fetch(hackathon.link, headers);
+          const software = await fetch(hackathon.link!, headers);
           const software_result = await software.text();
           const software_dom = new JSDOM(software_result);
           const wins_split = software_dom.window.document.querySelectorAll(
             "div.software-list-content > ul > li"
           );
-          let wins = [];
+          let wins: string[] = [];
           wins_split.forEach((e) => {
-            wins.push(e.textContent.split("Winner")[1].trim());
+            wins.push(e.textContent!.split("Winner")[1].trim());
           });
+          // techstack
           hackathon.winner = wins;
         }
         return hackathon;
@@ -73,7 +89,14 @@ async function main(user) {
     return res;
   } catch (e) {
     console.error(e);
+    return {
+      username: "",
+      total: 0,
+      wins: 0,
+      hackathons: [],
+    };
   }
 }
-
-console.log((await main("garvsl")).hackathons);
+(async () => {
+  console.log((await main("grabba")).hackathons);
+})();
