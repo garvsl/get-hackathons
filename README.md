@@ -13,7 +13,7 @@ npm install get-hackathons
 ```javascript
 const data = await getHackathons("garvsl"); // Desired username
 
-console.log(desiredData);
+console.log(data);
 ```
 
 ## Sample output
