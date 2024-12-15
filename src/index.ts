@@ -1,1 +1,1 @@
-export { getHackathons as getHackathons } from "./utils.js";
+export { getHackathons } from "./utils";
