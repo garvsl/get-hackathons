@@ -20,27 +20,29 @@ console.log(desiredData);
 
 ```json
 {
-    "username": "garvsl",
-    "total": 8,
-    "wins": 4,
-    "hackathons": [
+  "username": "garvsl",
+  "total": 8,
+  "wins": 4,
+  "rate": "50%",
+  "hackathons": [
     {
-        id: "745731",
-        link: "https://devpost.com/software/signlino",
-        title: "Signlingo",
-        tag: "Signlingo is an...",
-        img: "https://d112y698adiu2z...",
-        winner: ["Best AI Application Built with Cloudflare"]
+      "id": "745731",
+      "link": "https://devpost.com/software/signlino",
+      "title": "Signlingo",
+      "tag": "Signlingo is an...",
+      "img": "https://d112y698adiu2z...",
+      "winner": ["Best AI Application Built with Cloudflare"]
     },
     {
-        id: "639811",
-        link: "https://devpost.com/software/find-my-smile",
-        title: "Find My Smile",
-        tag: "Revolutionize Dental Care...",
-        img: "https://d112y698adiu2z...",
-        winner: false
-    },
+      "id": "639811",
+      "link": "https://devpost.com/software/find-my-smile",
+      "title": "Find My Smile",
+      "tag": "Revolutionize Dental Care...",
+      "img": "https://d112y698adiu2z...",
+      "winner": false
+    }
+  ]
 
-    ...
+  // More...
 }
 ```
