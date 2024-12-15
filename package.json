@@ -1,7 +1,7 @@
 {
   "name": "get-hackathons",
-  "version": "1.0.11",
-  "description": "",
+  "version": "2.0.0",
+  "description": "Easy retrieval of Hackathon data from the Devpost website",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -16,11 +16,22 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "npx tsx src/index.ts",
     "build": "tsc",
     "prepublishOnly": "npm run build"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "hackathons",
+    "scrape",
+    "api",
+    "devpost",
+    "wins"
+  ],
+  "repository": {
+    "type": "git",
+    "directory": "https://github.com/garvsl/get-hackathons.git"
+  },
+  "author": "Garv",
   "license": "ISC",
   "dependencies": {
     "jsdom": "^25.0.1"
