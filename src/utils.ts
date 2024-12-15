@@ -23,7 +23,7 @@ export async function getHackathons(username: string): Promise<UserHackathons> {
 }
 
 function calculateWinRate(total: number, wins: number): number {
-  return (wins / total) * 100;
+  return Math.floor((wins / total) * 100);
 }
 
 export async function fetchHackathons(
