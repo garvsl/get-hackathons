@@ -7,6 +7,7 @@ export async function getHackathons(username: string): Promise<UserHackathons> {
     username,
     total: 0,
     wins: 0,
+    rate: "0%",
     hackathons: [],
   };
 
@@ -19,6 +20,10 @@ export async function getHackathons(username: string): Promise<UserHackathons> {
     console.error(e);
     return res;
   }
+}
+
+function calculateWinRate(total: number, wins: number): number {
+  return (wins / total) * 100;
 }
 
 export async function fetchHackathons(
@@ -52,6 +57,7 @@ export async function fetchHackathons(
     res["total"] += 1;
     res["hackathons"].push({ id, link, title, tag, img, winner });
   });
+  res["rate"] = `${calculateWinRate(res["total"], res["wins"])}%`;
   return res;
 }
 
@@ -75,6 +81,7 @@ export async function getWins(
           wins.push(e.textContent!.split("Winner")[1].trim());
         });
         // TODO techstack
+        // TODO add project bio
         hackathon.winner = wins;
       }
       return hackathon;

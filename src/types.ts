@@ -2,6 +2,7 @@ export type UserHackathons = {
   username: string;
   total: number;
   wins: number;
+  rate: string;
   hackathons: Hackathon[];
 };
 
