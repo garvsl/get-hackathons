@@ -26,24 +26,11 @@ function calculateWinRate(total: number, wins: number): number {
   return Math.floor((wins / total) * 100);
 }
 
-export async function fetchHackathons(
+function processHackathons(
+  hackathons: NodeListOf<Element>,
   res: UserHackathons
-): Promise<UserHackathons> {
-  const response = await fetch(
-    `${CONFIG.BASE_URL}/${res.username}`,
-    CONFIG.HEADERS
-  );
-  if (response.status != 200) {
-    throw new Error(`Hackathon Retrieval Error! ${response.status}`);
-  }
-  const result = await response.text();
-
-  const dom = new JSDOM(result);
-
-  let hackathons_split =
-    dom.window.document.querySelectorAll("[data-software-id]");
-
-  hackathons_split.forEach((hackathon) => {
+) {
+  hackathons.forEach((hackathon) => {
     const id =
       hackathon.attributes.getNamedItem("data-software-id")?.textContent || "";
     const title = hackathon.querySelector("h5")?.textContent?.trim() || "";
@@ -57,7 +44,42 @@ export async function fetchHackathons(
     res["total"] += 1;
     res["hackathons"].push({ id, link, title, tag, img, winner });
   });
+
+  return res;
+}
+
+export async function fetchHackathons(
+  res: UserHackathons,
+  page = 1
+): Promise<UserHackathons> {
+  const response = await fetch(
+    `${CONFIG.BASE_URL}/${res.username}?page=${page}`,
+    CONFIG.HEADERS
+  );
+  if (response.status != 200) {
+    throw new Error(`Hackathon Retrieval Error! ${response.status}`);
+  }
+  const result = await response.text();
+
+  const dom = new JSDOM(result);
+
+  let hackathons_split =
+    dom.window.document.querySelectorAll("[data-software-id]");
+
+  res = processHackathons(hackathons_split, res);
+
+  const next_page = dom.window.document.querySelector(
+    "ul.pagination > li.next_page"
+  );
+  const available = dom.window.document.querySelector(
+    "ul.pagination > li.next_page:not(.unavailable)"
+  );
+
+  if (next_page && available) {
+    res = await fetchHackathons(res, page + 1);
+  }
   res["rate"] = `${calculateWinRate(res["total"], res["wins"])}%`;
+
   return res;
 }
 
