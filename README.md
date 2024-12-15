@@ -1,6 +1,6 @@
 # get-hackathons
 
-Get Hackathons is a lightweight & easy to use Javascript library designed for easy retrieval of Hackathon data from the Devpost website. It simplifies access to hackathon information, enabling developers to integrate the data in their applications like portfolios, etc.
+Get Hackathons is a lightweight & easy to use Javascript library designed for easy retrieval of an accounts hackathons and wins from the Devpost website. It simplifies access to hackathon information, enabling developers to integrate the data in their applications like portfolios, etc.
 
 ## Installation
 
