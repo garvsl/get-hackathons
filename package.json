@@ -29,7 +29,7 @@
   ],
   "repository": {
     "type": "git",
-    "directory": "https://github.com/garvsl/get-hackathons.git"
+    "url": "https://github.com/garvsl/get-hackathons.git"
   },
   "author": "Garv",
   "license": "ISC",
