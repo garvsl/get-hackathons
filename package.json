@@ -1,6 +1,6 @@
 {
   "name": "get-hackathons",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Easy retrieval of Hackathon data from the Devpost website",
   "type": "module",
   "main": "dist/index.js",
